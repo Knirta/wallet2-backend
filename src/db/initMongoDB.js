@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { getEnvVar } from "../helpers";
+import { getEnvVar } from "../helpers/index.js";
 
 export const initMongoDB = async () => {
   try {
@@ -10,7 +10,6 @@ export const initMongoDB = async () => {
 
     const uri = `mongodb+srv://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_URL}/${MONGODB_DB}?retryWrites=true&w=majority`;
     await mongoose.connect(uri);
-    console.log("MongoDB initialized");
   } catch (error) {
     console.error("Error initializing MongoDB:", error);
   }

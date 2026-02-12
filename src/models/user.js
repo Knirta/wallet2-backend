@@ -25,6 +25,7 @@ const userSchema = new Schema(
       minLength: [6, "Password is too short"],
       required: [true, "Password is required"],
     },
+    avatarURL: { type: String, required: true },
     currency: { type: String, enum: ["UAH", "USD", "EUR"], default: "UAH" },
     totalBalance: { type: Number, default: 0 },
   },
