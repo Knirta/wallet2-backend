@@ -8,7 +8,7 @@ const register = async (req, res) => {
     code: 201,
     message: "User registered successfully",
     data: {
-      name: newUser.name,
+      username: newUser.username,
       email: newUser.email,
     },
   });
