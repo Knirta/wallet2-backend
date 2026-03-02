@@ -59,7 +59,11 @@ const registerUser = async (payload) => {
     html,
   };
 
-  await sendEmail(verifyEmailData);
+  try {
+    await sendEmail(verifyEmailData);
+  } catch (error) {
+    console.error("Помилка надсилання електронного листа:", error);
+  }
 
   return newUser;
 };
