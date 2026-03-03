@@ -17,16 +17,17 @@ const register = async (req, res) => {
 };
 
 const verifyEmail = async (req, res) => {
-  const { verificationCode } = req.params;
+  const { verificationCode } = req.body;
   const user = await User.findOne({ verificationCode });
 
   if (!user) {
     throw HttpError(404, "User not found");
   }
 
-  user.isVerified = true;
-  user.verificationCode = null;
-  await user.save();
+  await User.findByIdAndUpdate(user._id, {
+    verified: true,
+    verificationCode: "",
+  });
 
   res.json({
     status: "success",

@@ -8,14 +8,11 @@ import fs from "fs/promises";
 import { sendEmail } from "../utils/index.js";
 import { User } from "../models/user.js";
 import { HttpError } from "../helpers/index.js";
-import { getEnvVar } from "../helpers/index.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const tempatesDir = path.join(__dirname, "../", "templates");
-
-const BASE_URL = getEnvVar("BASE_URL");
 
 const registerUser = async (payload) => {
   const user = await User.findOne({ email: payload.email });
@@ -50,7 +47,7 @@ const registerUser = async (payload) => {
 
   const html = template({
     name: newUser.username,
-    link: `${BASE_URL}/api/auth/verify/${newUser.verificationCode}`,
+    link: `http://localhost:5173/verify-email/${newUser.verificationCode}`,
   });
 
   const verifyEmailData = {

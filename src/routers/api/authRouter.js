@@ -11,6 +11,6 @@ authRouter.post(
   ctrl.register,
 );
 
-authRouter.get("/verify/:verificationCode", ctrl.verifyEmail);
+authRouter.post("/verify", ctrl.verifyEmail);
 
 export default authRouter;
