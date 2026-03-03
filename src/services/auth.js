@@ -61,11 +61,25 @@ const registerUser = async (payload) => {
 
   try {
     await sendEmail(verifyEmailData);
+    // eslint-disable-next-line no-unused-vars
   } catch (error) {
-    console.error("Помилка надсилання електронного листа:", error);
+    throw HttpError(503, "Failed to send verification email");
   }
 
   return newUser;
 };
 
-export { registerUser };
+const verifyUserEmail = async (verificationCode) => {
+  const user = await User.findOne({ verificationCode });
+
+  if (!user) {
+    throw HttpError(404, "User not found");
+  }
+
+  await User.findByIdAndUpdate(user._id, {
+    verified: true,
+    verificationCode: "",
+  });
+};
+
+export { registerUser, verifyUserEmail };
