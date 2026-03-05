@@ -63,6 +63,14 @@ const registerSchema = Joi.object({
     }),
 });
 
+const verifyEmailSchema = Joi.object({
+  verificationCode: Joi.string().required(),
+});
+
+const resendVerificationEmailSchema = Joi.object({
+  email: Joi.string().pattern(emailRegexp).required(),
+});
+
 const loginSchema = Joi.object({
   email: Joi.string().pattern(emailRegexp).required(),
   password: Joi.string()
@@ -81,6 +89,8 @@ const loginSchema = Joi.object({
 const schemas = {
   registerSchema,
   loginSchema,
+  verifyEmailSchema,
+  resendVerificationEmailSchema,
 };
 
 const User = model("user", userSchema);

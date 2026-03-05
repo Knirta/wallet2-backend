@@ -11,6 +11,16 @@ authRouter.post(
   ctrl.register,
 );
 
-authRouter.post("/verify", ctrl.verifyEmail);
+authRouter.post(
+  "/verify-email",
+  validateBody(schemas.verifyEmailSchema),
+  ctrl.verifyEmail,
+);
+
+authRouter.post(
+  "/resend-verification",
+  validateBody(schemas.resendVerificationEmailSchema),
+  ctrl.resendVerificationEmail,
+);
 
 export default authRouter;
