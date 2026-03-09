@@ -1,13 +1,13 @@
-import sgMail from "@sendgrid/mail";
+import { Resend } from "resend";
 import { getEnvVar } from "../helpers/index.js";
 
-const SENDGRID_API_KEY = getEnvVar("SENDGRID_API_KEY");
+const RESEND_API_KEY = getEnvVar("RESEND_API_KEY");
 
-sgMail.setApiKey(SENDGRID_API_KEY);
+const resend = new Resend(RESEND_API_KEY);
 
 const sendEmail = async (data) => {
   const email = { ...data, from: "korolchuk.kate.work@gmail.com" };
-  await sgMail.send(email);
+  await resend.emails.send(email);
   return true;
 };
 
