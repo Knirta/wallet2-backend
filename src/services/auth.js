@@ -36,14 +36,17 @@ const sendVerificationEmail = async (user) => {
     await sendEmail(verifyEmailData);
     // eslint-disable-next-line no-unused-vars
   } catch (error) {
-    throw HttpError(503, "Failed to send verification email");
+    throw HttpError(
+      503,
+      "Не вдалося надіслати лист для підтвердження реєстрації",
+    );
   }
 };
 
 const registerUser = async (payload) => {
   const user = await User.findOne({ email: payload.email });
   if (user) {
-    throw HttpError(409, "Email is already in use");
+    throw HttpError(409, "Користувач із такою поштою вже зареєстрований");
   }
 
   const hashedPassword = await bcrypt.hash(payload.password, 10);
@@ -74,7 +77,7 @@ const verifyUserEmail = async (verificationCode) => {
   const user = await User.findOne({ verificationCode });
 
   if (!user) {
-    throw HttpError(404, "User not found");
+    throw HttpError(404, "Користувача не знайдено");
   }
 
   await User.findByIdAndUpdate(user._id, {
@@ -87,11 +90,11 @@ const resendVerificationUserEmail = async (email) => {
   const user = await User.findOne({ email });
 
   if (!user) {
-    throw HttpError(404, "User not found");
+    throw HttpError(404, "Користувача не знайдено");
   }
 
   if (user.verified) {
-    throw HttpError(400, "Email is already verified");
+    throw HttpError(400, "Email вже підтверджено");
   }
 
   await sendVerificationEmail(user);

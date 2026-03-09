@@ -11,7 +11,7 @@ const register = async (req, res) => {
   res.status(201).json({
     status: "success",
     code: 201,
-    message: "User registered successfully",
+    message: "Користувач успішно зареєстрований",
     data: {
       username: newUser.username,
       email: newUser.email,
@@ -29,7 +29,7 @@ const verifyEmail = async (req, res) => {
   res.status(204).json({
     status: "success",
     code: 204,
-    message: "Email verified successfully",
+    message: "Email успішно підтверджено",
   });
 };
 
@@ -40,7 +40,7 @@ const resendVerificationEmail = async (req, res) => {
   res.status(200).json({
     status: "success",
     code: 200,
-    message: "Verification email resent successfully",
+    message: "Лист для підтвердження реєстрації успішно відправлено",
   });
 };
 
