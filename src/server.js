@@ -23,10 +23,8 @@ export const startServer = () => {
   });
 
   app.use((err, req, res, next) => {
-    res.status(500).json({
-      message: "Something went wrong",
-      error: err.message,
-    });
+    const { status = 500, message = "Server error" } = err;
+    res.status(status).json({ message });
   });
 
   app.listen(PORT, () => {
