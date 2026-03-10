@@ -12,7 +12,7 @@ export const startServer = () => {
 
   app.use(
     cors({
-      origin: ["http://localhost:5173", "https://ваш-фронтенд.vercel.app"],
+      origin: ["http://localhost:5173", "wallet-bay-pi.vercel.app"],
       credentials: true,
     }),
   );
