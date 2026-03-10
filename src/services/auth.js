@@ -102,13 +102,18 @@ const resendVerificationUserEmail = async (email) => {
 };
 
 const loginUser = async (payload) => {
-  const user = await User.findOne({ email: payload.email });
+  const { email, password } = payload;
+  const user = await User.findOne({ email });
 
   if (!user) {
     throw HttpError(401, "Невірна пошта або пароль");
   }
 
-  const passwordMatch = await bcrypt.compare(payload.password, user.password);
+  if (!user.verified) {
+    throw HttpError(401, "Підтвердіть свою пошту перед входом");
+  }
+
+  const passwordMatch = await bcrypt.compare(password, user.password);
 
   if (!passwordMatch) {
     throw HttpError(401, "Невірна пошта або пароль");
