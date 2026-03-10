@@ -20,9 +20,7 @@ const register = async (req, res) => {
 };
 
 const verifyEmail = async (req, res) => {
-  console.log("body", req.body);
   const { verificationCode } = req.body;
-  console.log("verificationCode", verificationCode);
 
   await verifyUserEmail(verificationCode);
 

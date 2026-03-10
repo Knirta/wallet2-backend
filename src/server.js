@@ -10,9 +10,14 @@ const PORT = Number(getEnvVar("PORT", 3000));
 export const startServer = () => {
   const app = express();
 
+  app.use(
+    cors({
+      origin: ["http://localhost:5173", "https://ваш-фронтенд.vercel.app"],
+      credentials: true,
+    }),
+  );
   app.use(morgan("tiny"));
   app.use(express.json());
-  app.use(cors());
 
   app.use("/api/auth", authRouter);
 

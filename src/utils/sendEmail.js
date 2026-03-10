@@ -6,7 +6,7 @@ const RESEND_API_KEY = getEnvVar("RESEND_API_KEY");
 const resend = new Resend(RESEND_API_KEY);
 
 const sendEmail = async (data) => {
-  const email = { ...data, from: "korolchuk.kate.work@gmail.com" };
+  const email = { ...data, from: "Wallet App <info@wallet-2.pp.ua>" };
   await resend.emails.send(email);
   return true;
 };

@@ -34,6 +34,7 @@ const sendVerificationEmail = async (user) => {
 
   try {
     await sendEmail(verifyEmailData);
+    console.log("Verification email sent successfully");
     // eslint-disable-next-line no-unused-vars
   } catch (error) {
     throw HttpError(
@@ -100,4 +101,25 @@ const resendVerificationUserEmail = async (email) => {
   await sendVerificationEmail(user);
 };
 
-export { registerUser, verifyUserEmail, resendVerificationUserEmail };
+const loginUser = async (payload) => {
+  const user = await User.findOne({ email: payload.email });
+
+  if (!user) {
+    throw HttpError(401, "Невірна пошта або пароль");
+  }
+
+  const passwordMatch = await bcrypt.compare(payload.password, user.password);
+
+  if (!passwordMatch) {
+    throw HttpError(401, "Невірна пошта або пароль");
+  }
+
+  return user;
+};
+
+export {
+  registerUser,
+  verifyUserEmail,
+  resendVerificationUserEmail,
+  loginUser,
+};
