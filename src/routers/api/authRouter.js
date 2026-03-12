@@ -27,4 +27,6 @@ authRouter.post("/login", validateBody(schemas.loginSchema), ctrl.login);
 
 authRouter.post("/logout", ctrl.logout);
 
+authRouter.get("/refresh", ctrl.refresh);
+
 export default authRouter;

@@ -4,6 +4,7 @@ import {
   resendVerificationUserEmail,
   loginUser,
   logoutUser,
+  refreshSession,
 } from "../services/auth.js";
 import { ctrlWrapper } from "../helpers/index.js";
 import { REFRESH_DURATION_SEC } from "../constants/index.js";
@@ -55,7 +56,6 @@ const login = async (req, res) => {
   const result = await loginUser(req.body);
 
   res.cookie("refreshToken", result.session.refreshToken, cookieOptions);
-  res.cookie("sessionId", result.session._id, cookieOptions);
 
   res.status(200).json({
     status: "success",
@@ -69,13 +69,41 @@ const login = async (req, res) => {
 };
 
 const logout = async (req, res) => {
-  if (req.cookies.sessionId) {
-    await logoutUser(req.cookies.sessionId);
+  const { refreshToken } = req.cookies;
+
+  if (refreshToken) {
+    await logoutUser(refreshToken);
   }
-  res.clearCookie("sessionId", cookieOptions);
+
   res.clearCookie("refreshToken", cookieOptions);
 
   res.status(204).send();
+};
+
+const refresh = async (req, res) => {
+  const { refreshToken: oldRefreshToken } = req.cookies;
+
+  if (!oldRefreshToken) {
+    return res.status(401).json({
+      status: "error",
+      code: 401,
+      message: "Відсутній refresh token або session ID",
+    });
+  }
+
+  const result = await refreshSession(oldRefreshToken);
+
+  res.cookie("refreshToken", result.session.refreshToken, cookieOptions);
+
+  res.status(200).json({
+    status: "success",
+    code: 200,
+    message: "Сесія оновлена",
+    data: {
+      user: result.user,
+      token: result.session.accessToken,
+    },
+  });
 };
 
 export default {
@@ -84,4 +112,5 @@ export default {
   resendVerificationEmail: ctrlWrapper(resendVerificationEmail),
   login: ctrlWrapper(login),
   logout: ctrlWrapper(logout),
+  refresh: ctrlWrapper(refresh),
 };

@@ -8,9 +8,10 @@ import {
 const JWT_ACCESS_SECRET = getEnvVar("JWT_ACCESS_SECRET");
 const JWT_REFRESH_SECRET = getEnvVar("JWT_REFRESH_SECRET");
 
-const createTokens = (id) => {
+const createTokens = (userId, sessionId) => {
   const tokenPayload = {
-    id,
+    userId,
+    sessionId,
   };
 
   const accessToken = jwt.sign(tokenPayload, JWT_ACCESS_SECRET, {
