@@ -23,4 +23,6 @@ authRouter.post(
   ctrl.resendVerificationEmail,
 );
 
+authRouter.post("/login", validateBody(schemas.loginSchema), ctrl.login);
+
 export default authRouter;

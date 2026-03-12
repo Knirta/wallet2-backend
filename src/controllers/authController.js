@@ -2,6 +2,7 @@ import {
   registerUser,
   verifyUserEmail,
   resendVerificationUserEmail,
+  loginUser,
 } from "../services/auth.js";
 import { ctrlWrapper } from "../helpers/index.js";
 
@@ -13,7 +14,7 @@ const register = async (req, res) => {
     code: 201,
     message: "Користувач успішно зареєстрований",
     data: {
-      username: newUser.username,
+      name: newUser.name,
       email: newUser.email,
     },
   });
@@ -42,8 +43,19 @@ const resendVerificationEmail = async (req, res) => {
   });
 };
 
+const login = async (req, res) => {
+  const result = await loginUser(req.body);
+  res.status(200).json({
+    status: "success",
+    code: 200,
+    message: "Успішний вхід",
+    data: result,
+  });
+};
+
 export default {
   register: ctrlWrapper(register),
   verifyEmail: ctrlWrapper(verifyEmail),
   resendVerificationEmail: ctrlWrapper(resendVerificationEmail),
+  login: ctrlWrapper(login),
 };
