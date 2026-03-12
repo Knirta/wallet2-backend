@@ -102,9 +102,14 @@ const loginUser = async (payload) => {
   };
 };
 
+const logoutUser = async (sessionId) => {
+  await Session.deleteOne({ _id: sessionId });
+};
+
 export {
   registerUser,
   verifyUserEmail,
   resendVerificationUserEmail,
   loginUser,
+  logoutUser,
 };

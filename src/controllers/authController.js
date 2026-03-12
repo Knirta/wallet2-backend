@@ -3,6 +3,7 @@ import {
   verifyUserEmail,
   resendVerificationUserEmail,
   loginUser,
+  logoutUser,
 } from "../services/auth.js";
 import { ctrlWrapper } from "../helpers/index.js";
 import { REFRESH_DURATION_SEC } from "../constants/index.js";
@@ -54,7 +55,7 @@ const login = async (req, res) => {
   const result = await loginUser(req.body);
 
   res.cookie("refreshToken", result.session.refreshToken, cookieOptions);
-  res.cookie("sessionId", result.session.userId, cookieOptions);
+  res.cookie("sessionId", result.session._id, cookieOptions);
 
   res.status(200).json({
     status: "success",
@@ -67,9 +68,20 @@ const login = async (req, res) => {
   });
 };
 
+const logout = async (req, res) => {
+  if (req.cookies.sessionId) {
+    await logoutUser(req.cookies.sessionId);
+  }
+  res.clearCookie("sessionId", cookieOptions);
+  res.clearCookie("refreshToken", cookieOptions);
+
+  res.status(204).send();
+};
+
 export default {
   register: ctrlWrapper(register),
   verifyEmail: ctrlWrapper(verifyEmail),
   resendVerificationEmail: ctrlWrapper(resendVerificationEmail),
   login: ctrlWrapper(login),
+  logout: ctrlWrapper(logout),
 };
