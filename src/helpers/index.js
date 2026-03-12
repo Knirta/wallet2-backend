@@ -4,7 +4,7 @@ import HttpError from "./HttpError.js";
 import ctrlWrapper from "./ctrlWrapper.js";
 import sendEmail from "./sendEmail.js";
 import { sendVerificationEmail } from "./authEmailHelpers.js";
-import createSession from "./createSession.js";
+import createTokens from "./createTokens.js";
 
 export {
   getEnvVar,
@@ -13,5 +13,5 @@ export {
   ctrlWrapper,
   sendEmail,
   sendVerificationEmail,
-  createSession,
+  createTokens,
 };

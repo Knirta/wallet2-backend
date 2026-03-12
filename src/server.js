@@ -1,6 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 import { getEnvVar } from "./helpers/index.js";
 import authRouter from "./routers/api/authRouter.js";
@@ -18,6 +19,7 @@ export const startServer = () => {
   );
   app.use(morgan("tiny"));
   app.use(express.json());
+  app.use(cookieParser());
 
   app.use("/api/auth", authRouter);
 

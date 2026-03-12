@@ -5,6 +5,13 @@ import {
   loginUser,
 } from "../services/auth.js";
 import { ctrlWrapper } from "../helpers/index.js";
+import { REFRESH_DURATION_SEC } from "../constants/index.js";
+
+const cookieOptions = {
+  httpOnly: true,
+  // secure: true, //для продакшн
+  maxAge: REFRESH_DURATION_SEC * 1000,
+};
 
 const register = async (req, res) => {
   const newUser = await registerUser(req.body);
@@ -45,11 +52,18 @@ const resendVerificationEmail = async (req, res) => {
 
 const login = async (req, res) => {
   const result = await loginUser(req.body);
+
+  res.cookie("refreshToken", result.session.refreshToken, cookieOptions);
+  res.cookie("sessionId", result.session.userId, cookieOptions);
+
   res.status(200).json({
     status: "success",
     code: 200,
     message: "Успішний вхід",
-    data: result,
+    data: {
+      user: result.user,
+      token: result.session.accessToken,
+    },
   });
 };
 

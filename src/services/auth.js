@@ -6,7 +6,7 @@ import { Session } from "../models/session.js";
 import {
   HttpError,
   sendVerificationEmail,
-  createSession,
+  createTokens,
 } from "../helpers/index.js";
 
 const registerUser = async (payload) => {
@@ -86,12 +86,12 @@ const loginUser = async (payload) => {
 
   await Session.deleteOne({ userId: user._id });
 
-  const tokens = createSession(user._id);
+  const tokens = createTokens(user._id);
 
-  await Session.create({ userId: user._id, ...tokens });
+  const session = await Session.create({ userId: user._id, ...tokens });
 
   return {
-    ...tokens,
+    session,
     user: {
       name: user.name,
       email: user.email,

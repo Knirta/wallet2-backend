@@ -1,19 +1,23 @@
 import jwt from "jsonwebtoken";
 import getEnvVar from "./getEnvVar.js";
+import {
+  ACCESS_DURATION_SEC,
+  REFRESH_DURATION_SEC,
+} from "../constants/index.js";
 
 const JWT_ACCESS_SECRET = getEnvVar("JWT_ACCESS_SECRET");
 const JWT_REFRESH_SECRET = getEnvVar("JWT_REFRESH_SECRET");
 
-const createSession = (id) => {
+const createTokens = (id) => {
   const tokenPayload = {
     id,
   };
 
   const accessToken = jwt.sign(tokenPayload, JWT_ACCESS_SECRET, {
-    expiresIn: "15m",
+    expiresIn: ACCESS_DURATION_SEC,
   });
   const refreshToken = jwt.sign(tokenPayload, JWT_REFRESH_SECRET, {
-    expiresIn: "7d",
+    expiresIn: REFRESH_DURATION_SEC,
   });
 
   return {
@@ -22,4 +26,4 @@ const createSession = (id) => {
   };
 };
 
-export default createSession;
+export default createTokens;
