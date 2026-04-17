@@ -3,9 +3,9 @@ import {
   verifyUserEmail,
   resendVerificationUserEmail,
   loginUser,
-  logoutUser,
   refreshSession,
 } from "../services/auth.js";
+import { Session } from "../models/session.js";
 import { ctrlWrapper } from "../helpers/index.js";
 import { REFRESH_DURATION_SEC } from "../constants/index.js";
 
@@ -69,15 +69,21 @@ const login = async (req, res) => {
 };
 
 const logout = async (req, res) => {
-  const { refreshToken } = req.cookies;
-
-  if (refreshToken) {
-    await logoutUser(refreshToken);
-  }
-
+  await Session.findByIdAndDelete(req.session?._id);
   res.clearCookie("refreshToken", cookieOptions);
-
   res.status(204).send();
+};
+
+const current = async (req, res) => {
+  res.json({
+    status: "success",
+    code: 200,
+    message: "Поточний користувач отриманий",
+    data: {
+      user: req.user,
+      token: req.session?.accessToken,
+    },
+  });
 };
 
 const refresh = async (req, res) => {
@@ -112,5 +118,6 @@ export default {
   resendVerificationEmail: ctrlWrapper(resendVerificationEmail),
   login: ctrlWrapper(login),
   logout: ctrlWrapper(logout),
+  current: ctrlWrapper(current),
   refresh: ctrlWrapper(refresh),
 };

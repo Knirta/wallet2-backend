@@ -87,20 +87,17 @@ const loginUser = async (payload) => {
     throw HttpError(403, "Підтвердіть свою пошту перед входом");
   }
 
-  const newSession = await Session.create({ userId: user._id });
+  const newSessionId = new mongoose.Types.ObjectId();
+  const tokens = createTokens(user._id, newSessionId);
 
-  const tokens = createTokens(user._id, newSession._id);
-
-  const updatedSession = await Session.findByIdAndUpdate(
-    newSession._id,
-    {
-      ...tokens,
-    },
-    { new: true },
-  );
+  const newSession = await Session.create({
+    _id: newSessionId,
+    userId: user._id,
+    ...tokens,
+  });
 
   return {
-    session: updatedSession,
+    session: newSession,
     user: {
       name: user.name,
       email: user.email,
@@ -109,10 +106,6 @@ const loginUser = async (payload) => {
       totalBalance: user.totalBalance || 0,
     },
   };
-};
-
-const logoutUser = async (refreshToken) => {
-  await Session.deleteOne({ refreshToken });
 };
 
 const refreshSession = async (oldRefreshToken) => {
@@ -164,6 +157,5 @@ export {
   verifyUserEmail,
   resendVerificationUserEmail,
   loginUser,
-  logoutUser,
   refreshSession,
 };
