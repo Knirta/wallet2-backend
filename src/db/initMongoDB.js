@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { getEnvVar } from "../helpers/index.js";
+import { seedCategories } from "../seaders/categorySeader.js";
 
 export const initMongoDB = async () => {
   try {
@@ -10,7 +11,9 @@ export const initMongoDB = async () => {
 
     const uri = `mongodb+srv://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_URL}/${MONGODB_DB}?retryWrites=true&w=majority`;
     await mongoose.connect(uri);
+    await seedCategories();
+    console.log("✅ MongoDB connection established and categories seeded.");
   } catch (error) {
-    console.error("Error initializing MongoDB:", error);
+    console.error("❌ Error initializing MongoDB:", error);
   }
 };

@@ -12,7 +12,7 @@ const transactionSchema = new Schema(
     },
     sum: { type: Number, required: true },
     type: { type: String, enum: ["income", "expense"], required: true },
-    category: { type: String, required: true },
+    category: { type: Schema.Types.ObjectId, ref: "category", required: true },
     date: { type: Date, required: true },
     comment: { type: String, default: "" },
   },
@@ -28,7 +28,6 @@ const createTransactionSchema = Joi.object({
     "any.required": "Сума є обов'язковою для заповнення",
   }),
   type: Joi.string().valid("income", "expense").required(),
-  category: Joi.string().required(), //todo --- add id ---
   date: Joi.date().required(),
   comment: Joi.string().allow("").max(250).optional(),
 });
