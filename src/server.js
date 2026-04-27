@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 
 import { getEnvVar } from "./helpers/index.js";
 import authRouter from "./routers/api/authRouter.js";
+import categoriesRouter from "./routers/api/categoriesRouter.js";
 
 const PORT = Number(getEnvVar("PORT", 3000));
 
@@ -22,6 +23,7 @@ export const startServer = () => {
   app.use(cookieParser());
 
   app.use("/api/auth", authRouter);
+  app.use("/api/categories", categoriesRouter);
 
   app.use((req, res, next) => {
     res.status(404).json({
