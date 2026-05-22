@@ -10,10 +10,19 @@ const transactionSchema = new Schema(
       required: true,
       index: true,
     },
-    sum: { type: Number, required: true },
     type: { type: String, enum: ["income", "expense"], required: true },
     category: { type: Schema.Types.ObjectId, ref: "category", required: true },
-    date: { type: Date, required: true },
+    amount: { type: Number, required: true, min: 1 },
+    date: {
+      type: Date,
+      required: true,
+      validate: {
+        validator: function (value) {
+          return value <= new Date(Date.now() + 60000);
+        },
+        message: "Дата не може бути в майбутньому",
+      },
+    },
     comment: { type: String, default: "" },
   },
   { timestamps: true, versionKey: false },
@@ -22,13 +31,19 @@ const transactionSchema = new Schema(
 transactionSchema.post("save", handleMongooseError);
 
 const createTransactionSchema = Joi.object({
-  sum: Joi.number().integer().positive().required().messages({
+  type: Joi.string().valid("income", "expense").required(),
+  category: Joi.string().required().messages({
+    "any.required": "Обов'язкове поле",
+  }),
+  amount: Joi.number().integer().positive().required().messages({
     "number.integer": "Сума повинна бути цілим числом",
     "number.positive": "Сума повинна бути додатнім числом",
     "any.required": "Сума є обов'язковою для заповнення",
   }),
-  type: Joi.string().valid("income", "expense").required(),
-  date: Joi.date().required(),
+  date: Joi.date().max("now").required().messages({
+    "date.max": "Дата не може бути в майбутньому",
+    "any.required": "Обов'язкове поле",
+  }),
   comment: Joi.string().allow("").max(250).optional(),
 });
 

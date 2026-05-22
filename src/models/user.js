@@ -40,7 +40,7 @@ const userSchema = new Schema(
     currency: { type: String, enum: ["UAH", "USD", "EUR"], default: "UAH" },
     verified: { type: Boolean, default: false },
     verificationCode: { type: String, default: "" },
-    totalBalance: { type: Number, default: 0 },
+    totalBalance: { type: Number, min: 0, default: 0 },
   },
   { timestamps: true, versionKey: false },
 );
