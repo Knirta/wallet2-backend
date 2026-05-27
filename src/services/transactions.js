@@ -53,4 +53,12 @@ const addNewTransaction = async ({
   }
 };
 
-export { addNewTransaction };
+const getUserTransactions = async (userId) => {
+  const transactions = await Transaction.find({ userId }).sort({ date: -1 });
+  return transactions.map((transaction) => ({
+    ...transaction.toObject(),
+    amount: transaction.amount / 100,
+  }));
+};
+
+export { addNewTransaction, getUserTransactions };
