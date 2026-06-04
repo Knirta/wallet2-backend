@@ -24,10 +24,12 @@ const transactionSchema = new Schema(
       },
     },
     comment: { type: String, default: "" },
+    balanceAfter: { type: Number, min: 0 },
   },
   { timestamps: true, versionKey: false },
 );
 
+transactionSchema.index({ userId: 1, date: -1 });
 transactionSchema.post("save", handleMongooseError);
 
 const createTransactionSchema = Joi.object({
@@ -45,6 +47,7 @@ const createTransactionSchema = Joi.object({
     "any.required": "Обов'язкове поле",
   }),
   comment: Joi.string().allow("").max(250).optional(),
+  balanceAfter: Joi.number().min(0),
 });
 
 const schemas = { createTransactionSchema };

@@ -11,17 +11,13 @@ const addNewTransaction = async ({
   comment,
 }) => {
   const amountInCents = Math.round(amount * 100);
+
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
-    const [newTransaction] = await Transaction.create(
-      [{ userId, type, category, amount: amountInCents, date, comment }],
-      {
-        session,
-      },
-    );
 
     const updateAmount = type === "income" ? amountInCents : -amountInCents;
+
     const updatedUser = await User.findByIdAndUpdate(
       { _id: userId },
       { $inc: { totalBalance: updateAmount } },
@@ -40,10 +36,32 @@ const addNewTransaction = async ({
       throw error;
     }
 
+    const [newTransaction] = await Transaction.create(
+      [
+        {
+          userId,
+          type,
+          category,
+          amount: amountInCents,
+          date,
+          comment,
+          balanceAfter: updatedUser.totalBalance,
+        },
+      ],
+      {
+        session,
+      },
+    );
+
+    const populatedTransaction = await Transaction.findById(newTransaction._id)
+      .populate("category")
+      .session(session);
+
     await session.commitTransaction();
     return {
-      ...newTransaction.toObject(),
-      amount: newTransaction.amount / 100,
+      ...populatedTransaction.toObject(),
+      amount: populatedTransaction.amount / 100,
+      balanceAfter: populatedTransaction.balanceAfter / 100,
     };
   } catch (error) {
     await session.abortTransaction();
@@ -53,12 +71,25 @@ const addNewTransaction = async ({
   }
 };
 
-const getUserTransactions = async (userId) => {
-  const transactions = await Transaction.find({ userId }).sort({ date: -1 });
-  return transactions.map((transaction) => ({
+const getUserTransactions = async (userId, limit, skip) => {
+  const totalCount = await Transaction.countDocuments({ userId });
+  const totalPages = Math.ceil(totalCount / limit);
+
+  const transactions = await Transaction.find({ userId })
+    .populate("category")
+    .sort({ date: -1 })
+    .limit(Number(limit))
+    .skip(Number(skip));
+
+  const returnedTransactions = transactions.map((transaction) => ({
     ...transaction.toObject(),
     amount: transaction.amount / 100,
+    balanceAfter: transaction.balanceAfter / 100,
   }));
+  return {
+    transactions: returnedTransactions,
+    totalPages,
+  };
 };
 
 export { addNewTransaction, getUserTransactions };

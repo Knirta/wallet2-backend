@@ -21,13 +21,17 @@ const addTransaction = async (req, res) => {
 
 const getTransactions = async (req, res) => {
   const { _id: userId } = req.user;
-  const transactions = await getUserTransactions(userId);
+  const { limit = 12, page = 1 } = req.query;
+  const skip = Number(limit) * (Number(page) - 1);
+  const result = await getUserTransactions(userId, limit, skip);
   res.status(200).json({
     status: "success",
     code: 200,
     message: "Транзакції успішно отримані",
     data: {
-      transactions,
+      transactions: result.transactions,
+      totalPages: result.totalPages,
+      currentPage: Number(page),
     },
   });
 };
