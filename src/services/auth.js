@@ -103,7 +103,7 @@ const loginUser = async (payload) => {
       email: user.email,
       avatarURL: user.avatarURL,
       currency: user.currency,
-      totalBalance: user.totalBalance || 0,
+      totalBalance: user.totalBalance / 100 || 0,
     },
   };
 };
@@ -144,7 +144,7 @@ const refreshSession = async (oldRefreshToken) => {
         email: user.email,
         avatarURL: user.avatarURL,
         currency: user.currency,
-        totalBalance: user.totalBalance || 0,
+        totalBalance: user.totalBalance / 100 || 0,
       },
     };
   } catch (error) {

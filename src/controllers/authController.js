@@ -80,7 +80,7 @@ const current = async (req, res) => {
     code: 200,
     message: "Поточний користувач отриманий",
     data: {
-      user: req.user,
+      user: { ...req.user, totalBalance: req.user.totalBalance / 100 || 0 },
       token: req.session?.accessToken,
     },
   });
