@@ -59,9 +59,12 @@ const addNewTransaction = async ({
 
     await session.commitTransaction();
     return {
-      ...populatedTransaction.toObject(),
-      amount: populatedTransaction.amount / 100,
-      balanceAfter: populatedTransaction.balanceAfter / 100,
+      newTransaction: {
+        ...populatedTransaction.toObject(),
+        amount: populatedTransaction.amount / 100,
+        balanceAfter: populatedTransaction.balanceAfter / 100,
+      },
+      totalBalance: updatedUser.totalBalance / 100,
     };
   } catch (error) {
     await session.abortTransaction();
