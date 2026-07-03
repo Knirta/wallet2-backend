@@ -16,9 +16,15 @@ const authenticate = async (req, res, next) => {
     const { userId, sessionId } = jwt.verify(token, JWT_ACCESS_SECRET);
     const session = await Session.findOne({
       _id: sessionId,
-    }).populate("userId", "-password -verificationCode -verified");
+    })
+      .populate("userId", "-password -verificationCode -verified")
+      .lean();
 
-    if (!session || session.userId.id !== userId) {
+    if (
+      !session ||
+      !session.userId ||
+      session.userId._id.toString() !== userId
+    ) {
       return next(HttpError(401));
     }
 

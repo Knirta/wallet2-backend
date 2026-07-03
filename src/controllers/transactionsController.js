@@ -23,7 +23,7 @@ const addTransaction = async (req, res) => {
 
 const getTransactions = async (req, res) => {
   const { _id: userId } = req.user;
-  const { limit = 12, page = 1 } = req.query;
+  const { limit = 9, page = 1 } = req.query;
   const skip = Number(limit) * (Number(page) - 1);
   const result = await getUserTransactions(userId, limit, skip);
   res.status(200).json({
