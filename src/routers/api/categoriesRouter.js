@@ -6,4 +6,6 @@ const categoriesRouter = express.Router();
 
 categoriesRouter.get("/", authenticate, ctrl.getCategories);
 
+categoriesRouter.get("/statistics", authenticate, ctrl.getCategoriesStatistics);
+
 export default categoriesRouter;
