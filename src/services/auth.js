@@ -104,6 +104,8 @@ const loginUser = async (payload) => {
       avatarURL: user.avatarURL,
       currency: user.currency,
       totalBalance: user.totalBalance / 100 || 0,
+      createdAt: user.createdAt,
+      apdatedAt: user.updatedAt,
     },
   };
 };
@@ -145,6 +147,8 @@ const refreshSession = async (oldRefreshToken) => {
         avatarURL: user.avatarURL,
         currency: user.currency,
         totalBalance: user.totalBalance / 100 || 0,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
       },
     };
   } catch (error) {

@@ -27,7 +27,7 @@ export const getMonthStatisticsService = async (userId, startDate, endDate) => {
       $project: {
         _id: 0,
         id: "$_id",
-        totalAmount: 1,
+        totalAmount: { $divide: ["$totalAmount", 100] },
         name: "$categoryDetails.name",
         icon: "$categoryDetails.icon",
         color: "$categoryDetails.color",
@@ -59,6 +59,6 @@ export const getMonthStatisticsService = async (userId, startDate, endDate) => {
   return {
     expenseStatistics,
     totalExpense,
-    totalIncome: totalIncome[0]?.totalAmount || 0,
+    totalIncome: totalIncome[0]?.totalAmount / 100 || 0,
   };
 };
