@@ -80,7 +80,7 @@ const getUserTransactions = async (userId, limit, skip) => {
 
   const transactions = await Transaction.find({ userId })
     .populate("category")
-    .sort({ date: -1 })
+    .sort({ date: -1, _id: -1 })
     .limit(Number(limit))
     .skip(Number(skip));
 
