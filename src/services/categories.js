@@ -30,9 +30,9 @@ export const getMonthStatisticsService = async (userId, startDate, endDate) => {
         totalAmount: { $divide: ["$totalAmount", 100] },
         name: "$categoryDetails.name",
         icon: "$categoryDetails.icon",
-        color: "$categoryDetails.color",
       },
     },
+    { $sort: { totalAmount: -1 } },
   ]);
 
   const totalExpense = expenseStatistics.reduce(
