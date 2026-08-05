@@ -11,7 +11,7 @@ import { REFRESH_DURATION_SEC } from "../constants/index.js";
 
 const cookieOptions = {
   httpOnly: true,
-  // secure: true, //для продакшн
+  secure: true, //для продакшн
   maxAge: REFRESH_DURATION_SEC * 1000,
 };
 
