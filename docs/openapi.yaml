@@ -1,0 +1,82 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: Wallet App
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  description: This is a documentation of wallet app
+tags:
+  - name: Auth
+    description: Auth operations.
+  - name: Transactions
+    description: Operations about transactions.
+servers:
+  - url: http://localhost:3000
+  - url: https://wallet-api-nitl.onrender.com
+paths:
+  /api/auth/register:
+    post:
+      summary: Register a new user
+      operationId: registerUser
+      description: Реєстрація нового користувача. Після успішної реєстрації на вказану електронну адресу буде відправлено лист для підтвердження.
+      tags:
+        - Auth
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+              properties:
+                name:
+                  type: string
+                  example: Antony
+                  description: Ім'я користувача для відображення в інтерфейсі гаманця.
+                email:
+                  type: string
+                  format: email
+                  example: antony@example.com
+                  description: Унікальна електронна адреса (використовується як логін).
+                password:
+                  type: string
+                  format: password
+                  example: mypassword123
+                  description: Пароль користувача (повинен містити не менше 8 символів, одну велику літеру та одну цифру).
+      responses:
+        "201":
+          description: Користувач успішно зареєстрований. На пошту відправлено лист верифікації.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  code:
+                    type: integer
+                    example: 201
+                  message:
+                    type: string
+                    example: "Користувач успішно зареєстрований. Перевірте ваш email для підтвердження."
+        "400":
+          description: Помилка валідації (наприклад, такий email вже існує або пароль занадто короткий).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Користувач з таким email вже зареєстрований"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer

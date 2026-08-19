@@ -11,21 +11,18 @@ import { REFRESH_DURATION_SEC } from "../constants/index.js";
 
 const cookieOptions = {
   httpOnly: true,
-  secure: true, //для продакшн
+  // secure: true, //для продакшн
   maxAge: REFRESH_DURATION_SEC * 1000,
 };
 
 const register = async (req, res) => {
-  const newUser = await registerUser(req.body);
+  await registerUser(req.body);
 
   res.status(201).json({
     status: "success",
     code: 201,
-    message: "Користувач успішно зареєстрований",
-    data: {
-      name: newUser.name,
-      email: newUser.email,
-    },
+    message:
+      "Користувач успішно зареєстрований. Перевірте ваш email для підтвердження.",
   });
 };
 

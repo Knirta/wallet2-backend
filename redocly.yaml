@@ -1,0 +1,9 @@
+extends:
+  - recommended
+
+rules:
+  no-unused-components: error
+
+apis:
+  wallet@v1:
+    root: docs/openapi.yaml

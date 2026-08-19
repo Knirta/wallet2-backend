@@ -8,6 +8,9 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "debug": "nodemon --inspect src/index.js",
+    "build": "redocly build-docs docs/openapi.yaml -o docs/redoc-static.html",
+    "build-json": "redocly bundle docs/openapi.yaml --ext json -o docs/swagger.json",
+    "preview-docs": "redocly preview",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -16,6 +19,7 @@
   "type": "module",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@redocly/cli": "^2.46.0",
     "eslint": "^10.0.0",
     "globals": "^17.3.0",
     "nodemon": "^3.1.11"
