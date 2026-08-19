@@ -34,7 +34,7 @@ export const startServer = () => {
   app.use("/api/categories", categoriesRouter);
   app.use("/api/transactions", transactionsRouter);
   app.use("/api/currency", currencyRouter);
-  app.get("/api/docs", (req, res) => {
+  app.get("/api-docs", (req, res) => {
     res.sendFile(path.join(__dirname, "../docs/redoc-static.html"));
   });
 
