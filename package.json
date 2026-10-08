@@ -8,8 +8,7 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "debug": "nodemon --inspect src/index.js",
-    "build": "redocly build-docs docs/openapi.yaml -o docs/redoc-static.html",
-    "build-json": "redocly bundle docs/openapi.yaml --ext json -o docs/swagger.json",
+    "build": "node src/index.js && redocly build-docs docs/swagger.json -o docs/redoc-static.html",
     "preview-docs": "redocly preview",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -37,6 +36,12 @@
     "mongoose": "^9.2.1",
     "morgan": "^1.10.1",
     "nanoid": "^5.1.6",
-    "resend": "^6.9.3"
+    "resend": "^6.9.3",
+    "swagger-jsdoc": "^6.3.0"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "docs/*"
+    ]
   }
 }

@@ -2,8 +2,8 @@ import handlebars from "handlebars";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 import fs from "fs/promises";
-import { sendEmail } from "../helpers/index.js";
-import { HttpError, getEnvVar } from "../helpers/index.js";
+import { sendEmail } from "./index.js";
+import { HttpError, getEnvVar } from "./index.js";
 
 const FRONTEND_URL = getEnvVar("FRONTEND_URL");
 

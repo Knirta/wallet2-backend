@@ -3,7 +3,7 @@ import handleMongooseError from "./handleMongooseError.js";
 import HttpError from "./HttpError.js";
 import ctrlWrapper from "./ctrlWrapper.js";
 import sendEmail from "./sendEmail.js";
-import { sendVerificationEmail } from "./authEmailHelpers.js";
+import { sendVerificationEmail } from "./sendVerificationEmail.js";
 import createTokens from "./createTokens.js";
 
 export {

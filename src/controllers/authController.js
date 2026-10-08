@@ -11,6 +11,7 @@ import { REFRESH_DURATION_SEC } from "../constants/index.js";
 
 const cookieOptions = {
   httpOnly: true,
+  // sameSite: "none",
   // secure: true, //для продакшн
   maxAge: REFRESH_DURATION_SEC * 1000,
 };
@@ -72,6 +73,10 @@ const logout = async (req, res) => {
 };
 
 const current = async (req, res) => {
+  console.log("req.baseurl", req.baseUrl);
+  console.log("req.path", req.path);
+  console.log("req", req);
+
   res.json({
     status: "success",
     code: 200,

@@ -5,26 +5,428 @@ import ctrl from "../../controllers/authController.js";
 
 const authRouter = express.Router();
 
+/**
+ * @openapi
+ * /api/auth/register:
+ *   post:
+ *     summary: Реєстрація нового користувача
+ *     operationId: registerUser
+ *     description: Реєстрація нового користувача. Після успішної реєстрації на вказану електронну адресу буде відправлено лист для підтвердження.
+ *     tags:
+ *       - Auth
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - password
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Antony
+ *                 description: Ім'я користувача для відображення в інтерфейсі гаманця.
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: antony@example.com
+ *                 description: Унікальна електронна адреса (використовується як логін).
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: Mypassword123
+ *                 description: Пароль користувача (повинен містити не менше 8 символів, одну велику літеру та одну цифру).
+ *     responses:
+ *       "201":
+ *         description: Користувач успішно зареєстрований. На пошту відправлено лист верифікації.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 code:
+ *                   type: integer
+ *                   example: 201
+ *                 message:
+ *                   type: string
+ *                   example: "Користувач успішно зареєстрований. Перевірте ваш email для підтвердження."
+ *       "409":
+ *         description: Конфлікт. Користувач із такою поштою вже зареєстрований
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 code:
+ *                   type: integer
+ *                   example: 409
+ *                 message:
+ *                   type: string
+ *                   example: "Користувач із такою поштою вже зареєстрований"
+ *       "400":
+ *         description: Помилка валідації (наприклад, такий email вже існує або пароль занадто короткий).
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Користувач з таким email вже зареєстрований"
+ */
 authRouter.post(
   "/register",
   validateBody(schemas.registerSchema),
   ctrl.register,
 );
 
+/**
+ * @openapi
+ * /api/auth/verify-email:
+ *   post:
+ *     summary: Верифікація email адреси
+ *     operationId: verifyEmail
+ *     description: Верифікація email адреси користувача.
+ *     tags:
+ *       - Auth
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - verificationCode
+ *             properties:
+ *               verificationCode:
+ *                 type: string
+ *                 example: fqRc1yKNodtiPMwjEOmeW
+ *                 description: Секретний код верифікації, який прийшов на пошту користувача.
+ *     responses:
+ *       "204":
+ *         description: Користувач успішно підтвердив email через коду верифікації.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 code:
+ *                   type: integer
+ *                   example: 204
+ *                 message:
+ *                   type: string
+ *                   example: "Email успішно підтверджено."
+ *       "404":
+ *         description: Користувача з таким кодом верифікації не знайдено
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 code:
+ *                   type: integer
+ *                   example: 404
+ *                 message:
+ *                   type: string
+ *                   example: "Користувача не знайдено"
+ */
 authRouter.post(
   "/verify-email",
   validateBody(schemas.verifyEmailSchema),
   ctrl.verifyEmail,
 );
 
+/**
+ * @openapi
+ * /api/auth/resend-verification:
+ *   post:
+ *     summary: Повторне надсилання листа верифікації
+ *     operationId: resendVerificationEmail
+ *     description: Повторне надсилання листа верифікації на вказану електронну адресу.
+ *     tags:
+ *       - Auth
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: antony@example.com
+ *                 description: Унікальна електронна адреса (використовується як логін).
+ *     responses:
+ *       "200":
+ *         description: На пошту успішно повторно відправлено лист верифікації.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 code:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Лист для підтвердження реєстрації успішно відправлено."
+ *       "404":
+ *         description: Користувача з таким email не знайдено
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 code:
+ *                   type: integer
+ *                   example: 404
+ *                 message:
+ *                   type: string
+ *                   example: "Користувача не знайдено"
+ *       "400":
+ *         description: Електронна адреса такого користувача вже підтверджена, повторне надсилання листа верифікації не потрібно.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 code:
+ *                   type: integer
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: "Email вже підтверджено"
+ */
 authRouter.post(
   "/resend-verification",
   validateBody(schemas.resendVerificationEmailSchema),
   ctrl.resendVerificationEmail,
 );
 
+/**
+ * @openapi
+ * /api/auth/login:
+ *   post:
+ *     summary: Аутентифікація користувача
+ *     operationId: loginUser
+ *     description: Аутентифікація користувача за допомогою електронної пошти та пароля. Після успішної аутентифікації користувач отримує токен доступу.
+ *     tags:
+ *       - Auth
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: antony@example.com
+ *                 description: Унікальна електронна адреса користувача (використовується як логін).
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: Mypassword123
+ *                 description: Пароль користувача (повинен містити не менше 8 символів, одну велику літеру та одну цифру).
+ *     responses:
+ *       "200":
+ *         description: Користувач успішно аутентифікований. Повертаються дані користувача та токен доступу.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 code:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Успішний вхід"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user:
+ *                       type: object
+ *                       properties:
+ *                         name:
+ *                           type: string
+ *                           example: Antony
+ *                         email:
+ *                           type: string
+ *                           format: email
+ *                           example: antony@example.com
+ *                         avatarURL:
+ *                           type: string
+ *                           format: url
+ *                           example: https://www.gravatar.com/avatar/abc123
+ *                         сurrency:
+ *                           type: string
+ *                           enum: [UAH, USD, EUR]
+ *                           example: UAH
+ *                           description: Валюта, яка використовується для відображення балансу та транзакцій.
+ *                         totalBalance:
+ *                           type: number
+ *                           example: 1540.50
+ *                           description: Поточний баланс гаманця розробника.
+ *                         createdAt:
+ *                           type: string
+ *                           format: date-time
+ *                           example: 2023-08-01T12:34:56.789Z
+ *                         updatedAt:
+ *                           type: string
+ *                           format: date-time
+ *                           example: 2023-08-15T09:21:43.123Z
+ *                     token:
+ *                       type: string
+ *                       example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YjE3YjQyZDI4YzQwMDAxY2E0ZDI4YiIsImlhdCI6MTY5NzA1NjAwMCwiZXhwIjoxNjk3MDU5NjAwfQ.7g8h9i0j1k2l3m4n5o6p7q8r9s0t1u2v3w4x5y6z7a8b9c0d1e2f3g4h5i6j7k8l9m0n1o2p3q4r5s6t7u8v9w0x1y
+ *       "401":
+ *         description: Користувач ввів невірну пошту або пароль.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 code:
+ *                   type: integer
+ *                   example: 401
+ *                 message:
+ *                   type: string
+ *                   example: "Невірна пошта або пароль"
+ *       "403":
+ *         description: Користувач не підтвердив свою пошту перед входом.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 code:
+ *                   type: integer
+ *                   example: 403
+ *                 message:
+ *                   type: string
+ *                   example: "Підтвердіть свою пошту перед входом"
+ *       "400":
+ *         description: Помилка валідації (наприклад, пароль занадто короткий).
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Пароль має бути мінімум 8 символів"
+ */
 authRouter.post("/login", validateBody(schemas.loginSchema), ctrl.login);
 
+/**
+ * @openapi
+ * /api/auth/current:
+ *   get:
+ *     summary: Отримання профілю поточного користувача
+ *     operationId: getCurrentUser
+ *     description: Отримання даних авторизованого користувача (зокрема поточного балансу гаманця) на основі JWT-токена.
+ *     tags:
+ *       - Auth
+ *     security:
+ *       - bearerAuth: [] # <--- Обов'язково додаємо! Це увімкне іконку замочка для токена
+ *     responses:
+ *       "200":
+ *         description: Профіль користувача успішно отримано.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 code:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Поточний користувач отриманий"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user:
+ *                       type: object
+ *                       properties:
+ *                         name:
+ *                           type: string
+ *                           example: Antony
+ *                         email:
+ *                           type: string
+ *                           format: email
+ *                           example: antony@example.com
+ *                         totalBalance:
+ *                           type: number
+ *                           example: 1540.50
+ *                           description: Поточний баланс гаманця розробника.
+ *                     token:
+ *                       type: string
+ *                       example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *       "401":
+ *         description: Користувач не авторизований. Токен відсутній, недійсний або прострочений.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 code:
+ *                   type: integer
+ *                   example: 401
+ *                 message:
+ *                   type: string
+ *                   example: "Not authorized"
+ */
 authRouter.get("/current", authenticate, ctrl.current);
 
 authRouter.post("/logout", authenticate, ctrl.logout);

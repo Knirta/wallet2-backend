@@ -14,6 +14,7 @@ const authenticate = async (req, res, next) => {
 
   try {
     const { userId, sessionId } = jwt.verify(token, JWT_ACCESS_SECRET);
+
     const session = await Session.findOne({
       _id: sessionId,
     })
@@ -34,6 +35,13 @@ const authenticate = async (req, res, next) => {
     next();
   } catch (e) {
     console.error("Error occurred while verifying token:", e);
+    if (e.name === "TokenExpiredError" && req.originalUrl.includes("/logout")) {
+      const decoded = jwt.decode(token);
+      if (decoded && decoded.sessionId) {
+        req.session = { _id: decoded.sessionId };
+        return next();
+      }
+    }
     next(HttpError(401));
   }
 };
