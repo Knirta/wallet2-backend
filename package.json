@@ -8,7 +8,7 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "debug": "nodemon --inspect src/index.js",
-    "build": "node src/index.js && redocly build-docs docs/swagger.json -o docs/redoc-static.html",
+    "build": "node src/generate-docs.js && redocly build-docs docs/swagger.json -o docs/redoc-static.html",
     "preview-docs": "redocly preview",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
