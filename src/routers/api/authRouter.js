@@ -531,23 +531,23 @@ authRouter.post("/logout", authenticate, ctrl.logout);
  *                 message:
  *                   type: string
  *                   example: "Сесія оновлена"
- *                data:
- *                  type: object
- *                  properties:
- *                    token:
- *                      type: string
- *                      example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWYzMTg1ODRlZTUxNWZhODM4MTkzY2YiLCJzZXNzaW9uSWQiOiI2YWU0ZjdkNTIwODU0ZTc0MzhkMGQwY2EiLCJpYXQiOjE3OTMzOTA1NDksImV4cCI6MTc5MzM5MTQ0OX0.1l3tXT4djieHRpf4VtSsT3z6ZSJfRrdrufpAVf3i_vE"
- *                    user:
- *                      type: object
- *                      properties:
- *                        name:
- *                          type: string
- *                          example: Antony
- *                        email:
- *                          type: string
- *                          format: email
- *                          example: antony@example.com
- *                       avatarURL:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     token:
+ *                       type: string
+ *                       example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWYzMTg1ODRlZTUxNWZhODM4MTkzY2YiLCJzZXNzaW9uSWQiOiI2YWU0ZjdkNTIwODU0ZTc0MzhkMGQwY2EiLCJpYXQiOjE3OTMzOTA1NDksImV4cCI6MTc5MzM5MTQ0OX0.1l3tXT4djieHRpf4VtSsT3z6ZSJfRrdrufpAVf3i_vE"
+ *                     user:
+ *                       type: object
+ *                       properties:
+ *                         name:
+ *                           type: string
+ *                           example: Antony
+ *                         email:
+ *                           type: string
+ *                           format: email
+ *                           example: antony@example.com
+ *                         qavatarURL:
  *                           type: string
  *                           format: url
  *                           example: https://www.gravatar.com/avatar/abc123
