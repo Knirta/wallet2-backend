@@ -36,10 +36,14 @@ const authenticate = async (req, res, next) => {
   } catch (e) {
     console.error("Error occurred while verifying token:", e);
     if (e.name === "TokenExpiredError" && req.originalUrl.includes("/logout")) {
-      const decoded = jwt.decode(token);
-      if (decoded && decoded.sessionId) {
-        req.session = { _id: decoded.sessionId };
+      try {
+        const { sessionId } = jwt.verify(token, JWT_ACCESS_SECRET, {
+          ignoreExpiration: true,
+        });
+        req.session = { _id: sessionId };
         return next();
+      } catch {
+        return next(HttpError(401));
       }
     }
     next(HttpError(401));

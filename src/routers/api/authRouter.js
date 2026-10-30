@@ -372,7 +372,7 @@ authRouter.post("/login", validateBody(schemas.loginSchema), ctrl.login);
  *     tags:
  *       - Auth
  *     security:
- *       - bearerAuth: [] # <--- Обов'язково додаємо! Це увімкне іконку замочка для токена
+ *       - bearerAuth: []
  *     responses:
  *       "200":
  *         description: Профіль користувача успішно отримано.
@@ -403,10 +403,27 @@ authRouter.post("/login", validateBody(schemas.loginSchema), ctrl.login);
  *                           type: string
  *                           format: email
  *                           example: antony@example.com
+ *                         avatarURL:
+ *                           type: string
+ *                           format: url
+ *                           example: https://www.gravatar.com/avatar/abc123
+ *                         сurrency:
+ *                           type: string
+ *                           enum: [UAH, USD, EUR]
+ *                           example: UAH
+ *                           description: Валюта, яка використовується для відображення балансу та транзакцій.
  *                         totalBalance:
  *                           type: number
  *                           example: 1540.50
  *                           description: Поточний баланс гаманця розробника.
+ *                         createdAt:
+ *                           type: string
+ *                           format: date-time
+ *                           example: 2023-08-01T12:34:56.789Z
+ *                         updatedAt:
+ *                           type: string
+ *                           format: date-time
+ *                           example: 2023-08-15T09:21:43.123Z
  *                     token:
  *                       type: string
  *                       example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
@@ -429,6 +446,85 @@ authRouter.post("/login", validateBody(schemas.loginSchema), ctrl.login);
  */
 authRouter.get("/current", authenticate, ctrl.current);
 
+/**
+ * @openapi
+ * /api/auth/logout:
+ *   post:
+ *     summary: Вихід користувача
+ *     operationId: logoutUser
+ *     description: Вихід користувача з сесії. Після успішного виходу токен буде недійсним.
+ *     tags:
+ *       - Auth
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - password
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Antony
+ *                 description: Ім'я користувача для відображення в інтерфейсі гаманця.
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: antony@example.com
+ *                 description: Унікальна електронна адреса (використовується як логін).
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: Mypassword123
+ *                 description: Пароль користувача (повинен містити не менше 8 символів, одну велику літеру та одну цифру).
+ *     responses:
+ *       "201":
+ *         description: Користувач успішно зареєстрований. На пошту відправлено лист верифікації.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 code:
+ *                   type: integer
+ *                   example: 201
+ *                 message:
+ *                   type: string
+ *                   example: "Користувач успішно зареєстрований. Перевірте ваш email для підтвердження."
+ *       "409":
+ *         description: Конфлікт. Користувач із такою поштою вже зареєстрований
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 code:
+ *                   type: integer
+ *                   example: 409
+ *                 message:
+ *                   type: string
+ *                   example: "Користувач із такою поштою вже зареєстрований"
+ *       "400":
+ *         description: Помилка валідації (наприклад, такий email вже існує або пароль занадто короткий).
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Користувач з таким email вже зареєстрований"
+ */
 authRouter.post("/logout", authenticate, ctrl.logout);
 
 authRouter.get("/refresh", ctrl.refresh);
