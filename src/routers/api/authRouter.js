@@ -80,6 +80,12 @@ const authRouter = express.Router();
  *             schema:
  *               type: object
  *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 code:
+ *                   type: integer
+ *                   example: 400
  *                 message:
  *                   type: string
  *                   example: "Користувач з таким email вже зареєстрований"
@@ -115,7 +121,7 @@ authRouter.post(
  *                 description: Секретний код верифікації, який прийшов на пошту користувача.
  *     responses:
  *       "204":
- *         description: Користувач успішно підтвердив email через коду верифікації.
+ *         description: Користувач успішно підтвердив email через код верифікації.
  *         content:
  *           application/json:
  *             schema:
@@ -356,6 +362,12 @@ authRouter.post(
  *             schema:
  *               type: object
  *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 code:
+ *                   type: integer
+ *                   example: 400
  *                 message:
  *                   type: string
  *                   example: "Пароль має бути мінімум 8 символів"
@@ -426,7 +438,7 @@ authRouter.post("/login", validateBody(schemas.loginSchema), ctrl.login);
  *                           example: 2023-08-15T09:21:43.123Z
  *                     token:
  *                       type: string
- *                       example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *                       example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWYzMTg1ODRlZTUxNWZhODM4MTkzY2YiLCJzZXNzaW9uSWQiOiI2YWU0ZjdkNTIwODU0ZTc0MzhkMGQwY2EiLCJpYXQiOjE3OTMzOTA1NDksImV4cCI6MTc5MzM5MTQ0OX0.1l3tXT4djieHRpf4VtSsT3z6ZSJfRrdrufpAVf3i_vE"
  *       "401":
  *         description: Користувач не авторизований. Токен відсутній, недійсний або прострочений.
  *         content:
@@ -452,54 +464,16 @@ authRouter.get("/current", authenticate, ctrl.current);
  *   post:
  *     summary: Вихід користувача
  *     operationId: logoutUser
- *     description: Вихід користувача з сесії. Після успішного виходу токен буде недійсним.
+ *     description: Видалення активної сесії користувача з бази даних MongoDB, очищення cookies та анулювання доступу.
  *     tags:
  *       - Auth
- *     security: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - name
- *               - email
- *               - password
- *             properties:
- *               name:
- *                 type: string
- *                 example: Antony
- *                 description: Ім'я користувача для відображення в інтерфейсі гаманця.
- *               email:
- *                 type: string
- *                 format: email
- *                 example: antony@example.com
- *                 description: Унікальна електронна адреса (використовується як логін).
- *               password:
- *                 type: string
- *                 format: password
- *                 example: Mypassword123
- *                 description: Пароль користувача (повинен містити не менше 8 символів, одну велику літеру та одну цифру).
+ *     security:
+ *       - bearerAuth: []
  *     responses:
- *       "201":
- *         description: Користувач успішно зареєстрований. На пошту відправлено лист верифікації.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: success
- *                 code:
- *                   type: integer
- *                   example: 201
- *                 message:
- *                   type: string
- *                   example: "Користувач успішно зареєстрований. Перевірте ваш email для підтвердження."
- *       "409":
- *         description: Конфлікт. Користувач із такою поштою вже зареєстрований
+ *       "204":
+ *         description: Користувач успішно вийшов із сесії. Тіло відповіді відсутнє (No Content).
+ *       "401":
+ *         description: Користувач не авторизований. Токен відсутній, недійсний або прострочений.
  *         content:
  *           application/json:
  *             schema:
@@ -510,23 +484,111 @@ authRouter.get("/current", authenticate, ctrl.current);
  *                   example: error
  *                 code:
  *                   type: integer
- *                   example: 409
+ *                   example: 401
  *                 message:
  *                   type: string
- *                   example: "Користувач із такою поштою вже зареєстрований"
- *       "400":
- *         description: Помилка валідації (наприклад, такий email вже існує або пароль занадто короткий).
+ *                   example: "Not authorized"
+ */
+authRouter.post("/logout", authenticate, ctrl.logout);
+
+/**
+ * @openapi
+ * /api/auth/refresh:
+ *   get:
+ *     summary: Оновлення сесії користувача
+ *     operationId: refreshAccessToken
+ *     description: Перевіряє старий refresh token з cookies, видаляє стару сесію, створює нову, записує новий refresh token у cookies та повертає новий access token та дані користувача.
+ *     tags:
+ *       - Auth
+ *     parameters:
+ *       - in: cookie
+ *         name: refreshToken
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Старий refresh token, який зберігається у cookies.
+ *     security: []
+ *     responses:
+ *       "200":
+ *         description: Сесія успішно оновлена. У cookies записується новий `refreshToken`.
+ *         headers:
+ *           Set-Cookie:
+ *             description: Новий refresh token, який зберігається у cookies.
+ *             schema:
+ *               type: string
+ *               example: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YjE3YjQyZDI4YzQwMDAxY2E0ZDI4YiIsImlhdCI6MTY5NzA1NjAwMCwiZXhwIjoxNjk3MDU5NjAwfQ.7g8h9i0j1k2l3m4n5o6p7q8r9s0t1u2v3w4x5y6z7a8b9c0d1e2f3g4h5i6j7k8l9m0n1o2p3q4r5s6t7u8v9w0x1y; HttpOnly; Path=/; Max-Age=259200; SameSite=Strict; Secure
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 code:
+ *                   type: integer
+ *                   example: 200
  *                 message:
  *                   type: string
- *                   example: "Користувач з таким email вже зареєстрований"
+ *                   example: "Сесія оновлена"
+ *                data:
+ *                  type: object
+ *                  properties:
+ *                    token:
+ *                      type: string
+ *                      example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWYzMTg1ODRlZTUxNWZhODM4MTkzY2YiLCJzZXNzaW9uSWQiOiI2YWU0ZjdkNTIwODU0ZTc0MzhkMGQwY2EiLCJpYXQiOjE3OTMzOTA1NDksImV4cCI6MTc5MzM5MTQ0OX0.1l3tXT4djieHRpf4VtSsT3z6ZSJfRrdrufpAVf3i_vE"
+ *                    user:
+ *                      type: object
+ *                      properties:
+ *                        name:
+ *                          type: string
+ *                          example: Antony
+ *                        email:
+ *                          type: string
+ *                          format: email
+ *                          example: antony@example.com
+ *                       avatarURL:
+ *                           type: string
+ *                           format: url
+ *                           example: https://www.gravatar.com/avatar/abc123
+ *                         сurrency:
+ *                           type: string
+ *                           enum: [UAH, USD, EUR]
+ *                           example: UAH
+ *                           description: Валюта, яка використовується для відображення балансу та транзакцій.
+ *                         totalBalance:
+ *                           type: number
+ *                           example: 1540.50
+ *                           description: Поточний баланс гаманця розробника.
+ *                         createdAt:
+ *                           type: string
+ *                           format: date-time
+ *                           example: 2023-08-01T12:34:56.789Z
+ *                         updatedAt:
+ *                           type: string
+ *                           format: date-time
+ *                           example: 2023-08-15T09:21:43.123Z
+ *       401:
+ *         description: Помилка авторизації (відсутній, невалідний токен або сесію не знайдено)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 code:
+ *                   type: integer
+ *                   example: 401
+ *                 message:
+ *                   type: string
+ *                   enum:
+ *                     - "Користувача не знайдено"
+ *                     - "Сесія не знайдена"
+ *                     - "Невалідний refresh token"
+ *                   example: Відсутній refresh token або session ID
  */
-authRouter.post("/logout", authenticate, ctrl.logout);
-
 authRouter.get("/refresh", ctrl.refresh);
 
 export default authRouter;
