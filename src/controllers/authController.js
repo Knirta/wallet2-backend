@@ -11,8 +11,8 @@ import { REFRESH_DURATION_SEC } from "../constants/index.js";
 
 const cookieOptions = {
   httpOnly: true,
-  // sameSite: "none",
-  // secure: true, //для продакшн
+  sameSite: "none",
+  secure: true, //для продакшн
   maxAge: REFRESH_DURATION_SEC * 1000,
 };
 
@@ -32,10 +32,10 @@ const verifyEmail = async (req, res) => {
 
   await verifyUserEmail(verificationCode);
 
-  res.status(204).json({
+  res.status(200).json({
     status: "success",
-    code: 204,
-    message: "Email успішно підтверджено",
+    code: 200,
+    message: "Email успішно підтверджено.",
   });
 };
 

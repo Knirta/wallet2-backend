@@ -39,7 +39,7 @@ const authRouter = express.Router();
  *                 type: string
  *                 format: password
  *                 example: Mypassword123
- *                 description: Пароль користувача (повинен містити не менше 8 символів, одну велику літеру та одну цифру).
+ *                 description: Пароль користувача (не менше 8 символів, має містити одну велику латинську літеру та одну цифру, не повинен містити кириличних символів).
  *     responses:
  *       "201":
  *         description: Користувач успішно зареєстрований. На пошту відправлено лист верифікації.
@@ -74,7 +74,7 @@ const authRouter = express.Router();
  *                   type: string
  *                   example: "Користувач із такою поштою вже зареєстрований"
  *       "400":
- *         description: Помилка валідації (наприклад, такий email вже існує або пароль занадто короткий).
+ *         description: Помилка валідації (наприклад, некоректна адреса email або пароль не відповідає вимогам).
  *         content:
  *           application/json:
  *             schema:
@@ -88,7 +88,7 @@ const authRouter = express.Router();
  *                   example: 400
  *                 message:
  *                   type: string
- *                   example: "Користувач з таким email вже зареєстрований"
+ *                   example: "Пароль має бути мінімум 8 символів"
  */
 authRouter.post(
   "/register",
@@ -120,7 +120,7 @@ authRouter.post(
  *                 example: fqRc1yKNodtiPMwjEOmeW
  *                 description: Секретний код верифікації, який прийшов на пошту користувача.
  *     responses:
- *       "204":
+ *       "200":
  *         description: Користувач успішно підтвердив email через код верифікації.
  *         content:
  *           application/json:
@@ -132,7 +132,7 @@ authRouter.post(
  *                   example: success
  *                 code:
  *                   type: integer
- *                   example: 204
+ *                   example: 200
  *                 message:
  *                   type: string
  *                   example: "Email успішно підтверджено."
@@ -199,7 +199,7 @@ authRouter.post(
  *                   example: 200
  *                 message:
  *                   type: string
- *                   example: "Лист для підтвердження реєстрації успішно відправлено."
+ *                   example: "Лист для підтвердження реєстрації успішно відправлено"
  *       "404":
  *         description: Користувача з таким email не знайдено
  *         content:
@@ -268,7 +268,7 @@ authRouter.post(
  *                 type: string
  *                 format: password
  *                 example: Mypassword123
- *                 description: Пароль користувача (повинен містити не менше 8 символів, одну велику літеру та одну цифру).
+ *                 description: Пароль користувача (не менше 8 символів, має містити одну велику латинську літеру та одну цифру, не повинен містити кириличних символів).
  *     responses:
  *       "200":
  *         description: Користувач успішно аутентифікований. Повертаються дані користувача та токен доступу.
@@ -301,9 +301,9 @@ authRouter.post(
  *                           example: antony@example.com
  *                         avatarURL:
  *                           type: string
- *                           format: url
+ *                           format: uri
  *                           example: https://www.gravatar.com/avatar/abc123
- *                         сurrency:
+ *                         currency:
  *                           type: string
  *                           enum: [UAH, USD, EUR]
  *                           example: UAH
@@ -311,7 +311,7 @@ authRouter.post(
  *                         totalBalance:
  *                           type: number
  *                           example: 1540.50
- *                           description: Поточний баланс гаманця розробника.
+ *                           description: Поточний баланс гаманця користувача.
  *                         createdAt:
  *                           type: string
  *                           format: date-time
@@ -417,9 +417,9 @@ authRouter.post("/login", validateBody(schemas.loginSchema), ctrl.login);
  *                           example: antony@example.com
  *                         avatarURL:
  *                           type: string
- *                           format: url
+ *                           format: uri
  *                           example: https://www.gravatar.com/avatar/abc123
- *                         сurrency:
+ *                         currency:
  *                           type: string
  *                           enum: [UAH, USD, EUR]
  *                           example: UAH
@@ -427,7 +427,7 @@ authRouter.post("/login", validateBody(schemas.loginSchema), ctrl.login);
  *                         totalBalance:
  *                           type: number
  *                           example: 1540.50
- *                           description: Поточний баланс гаманця розробника.
+ *                           description: Поточний баланс гаманця користувача.
  *                         createdAt:
  *                           type: string
  *                           format: date-time
@@ -516,7 +516,7 @@ authRouter.post("/logout", authenticate, ctrl.logout);
  *             description: Новий refresh token, який зберігається у cookies.
  *             schema:
  *               type: string
- *               example: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YjE3YjQyZDI4YzQwMDAxY2E0ZDI4YiIsImlhdCI6MTY5NzA1NjAwMCwiZXhwIjoxNjk3MDU5NjAwfQ.7g8h9i0j1k2l3m4n5o6p7q8r9s0t1u2v3w4x5y6z7a8b9c0d1e2f3g4h5i6j7k8l9m0n1o2p3q4r5s6t7u8v9w0x1y; HttpOnly; Path=/; Max-Age=259200; SameSite=Strict; Secure
+ *               example: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YjE3YjQyZDI4YzQwMDAxY2E0ZDI4YiIsImlhdCI6MTY5NzA1NjAwMCwiZXhwIjoxNjk3MDU5NjAwfQ.7g8h9i0j1k2l3m4n5o6p7q8r9s0t1u2v3w4x5y6z7a8b9c0d1e2f3g4h5i6j7k8l9m0n1o2p3q4r5s6t7u8v9w0x1y; HttpOnly; Max-Age=259200; SameSite=None; Secure
  *         content:
  *           application/json:
  *             schema:
@@ -547,11 +547,11 @@ authRouter.post("/logout", authenticate, ctrl.logout);
  *                           type: string
  *                           format: email
  *                           example: antony@example.com
- *                         qavatarURL:
+ *                         avatarURL:
  *                           type: string
- *                           format: url
+ *                           format: uri
  *                           example: https://www.gravatar.com/avatar/abc123
- *                         сurrency:
+ *                         currency:
  *                           type: string
  *                           enum: [UAH, USD, EUR]
  *                           example: UAH
@@ -559,7 +559,7 @@ authRouter.post("/logout", authenticate, ctrl.logout);
  *                         totalBalance:
  *                           type: number
  *                           example: 1540.50
- *                           description: Поточний баланс гаманця розробника.
+ *                           description: Поточний баланс гаманця користувача.
  *                         createdAt:
  *                           type: string
  *                           format: date-time

@@ -37,9 +37,10 @@ const createTransactionSchema = Joi.object({
   category: Joi.string().required().messages({
     "any.required": "Обов'язкове поле",
   }),
-  amount: Joi.number().integer().positive().required().messages({
-    "number.integer": "Сума повинна бути цілим числом",
-    "number.positive": "Сума повинна бути додатнім числом",
+  amount: Joi.number().min(0.01).precision(2).strict().required().messages({
+    "number.base": "Сума повинна бути числом",
+    "number.min": "Сума повинна бути не менше 0.01",
+    "number.precision": "Сума повинна мати не більше 2 знаків після коми",
     "any.required": "Сума є обов'язковою для заповнення",
   }),
   date: Joi.date().max("now").required().messages({
@@ -47,7 +48,6 @@ const createTransactionSchema = Joi.object({
     "any.required": "Обов'язкове поле",
   }),
   comment: Joi.string().allow("").max(250).optional(),
-  balanceAfter: Joi.number().min(0),
 });
 
 const schemas = { createTransactionSchema };

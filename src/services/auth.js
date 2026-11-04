@@ -105,7 +105,7 @@ const loginUser = async (payload) => {
       currency: user.currency,
       totalBalance: user.totalBalance / 100 || 0,
       createdAt: user.createdAt,
-      apdatedAt: user.updatedAt,
+      updatedAt: user.updatedAt,
     },
   };
 };
