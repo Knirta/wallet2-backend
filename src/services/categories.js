@@ -18,7 +18,6 @@ export const getMonthStatisticsService = async (userId, startDate, endDate) => {
         from: "categories",
         localField: "_id",
         foreignField: "_id",
-        // pipeline: [{ $project: { name: 1, icon: 1, color: 1 } }],
         as: "categoryDetails",
       },
     },

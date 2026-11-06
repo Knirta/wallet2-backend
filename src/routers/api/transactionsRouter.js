@@ -32,6 +32,7 @@ const transactionsRouter = express.Router();
  *                 type: string
  *                 enum: [income, expense]
  *                 example: expense
+ *                 description: Тип транзакції (дохід або витрата).
  *               category:
  *                 type: string
  *                 example: 64b17b42d28c40001ca4d28b
@@ -45,9 +46,11 @@ const transactionsRouter = express.Router();
  *                 type: string
  *                 format: date-time
  *                 example: 2023-08-15T09:21:43.123Z
+ *                 description: Дата та час транзакції у форматі ISO 8601.
  *               comment:
  *                 type: string
  *                 example: Покупки
+ *                 description: Коментар до транзакції.
  *     responses:
  *       "201":
  *         description: Транзакцію успішно додано.
@@ -95,9 +98,6 @@ const transactionsRouter = express.Router();
  *                             icon:
  *                               type: string
  *                               example: cart
- *                             color:
- *                               type: string
- *                               example: "#FF6384"
  *                         amount:
  *                           type: number
  *                           example: 25.50
@@ -119,7 +119,6 @@ const transactionsRouter = express.Router();
  *                     totalBalance:
  *                       type: number
  *                       example: 2515.50
- *                       description: Баланс користувача після транзакції.
  *       "400":
  *         description: Недостатньо коштів або дані транзакції не пройшли перевірку.
  *         content:
@@ -253,9 +252,6 @@ transactionsRouter.post(
  *                               icon:
  *                                 type: string
  *                                 example: cart
- *                               color:
- *                                 type: string
- *                                 example: "#FF6384"
  *                           amount:
  *                             type: number
  *                             example: 25.50

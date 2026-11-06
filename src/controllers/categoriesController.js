@@ -20,7 +20,6 @@ const getCategoriesStatistics = async (req, res) => {
   const parsedMonth = Number(month);
   const parsedYear = Number(year);
 
-  // const monthIndex = month - 1;
   const startDate = new Date(parsedYear, parsedMonth, 1);
   const endDate = new Date(parsedYear, parsedMonth + 1, 1);
   const { expenseStatistics, totalExpense, totalIncome } =
